@@ -1,0 +1,6 @@
+Wwwision\NodeEventLog\Projection\EventLogRepository:
+  arguments:
+    1:
+      object:
+        factoryObjectName: 'Doctrine\ORM\EntityManagerInterface'
+        factoryMethodName: 'getConnection'

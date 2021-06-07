@@ -1,0 +1,25 @@
+{
+    "description": "Log for nodes in the Event Sourced Content Repository",
+    "type": "neos-package",
+    "name": "wwwision/node-event-log",
+    "require": {
+        "ext-json": "*",
+        "neos/flow": "*",
+        "neos/event-sourcing": "^2.3",
+        "neos/event-sourced-content-repository": "*",
+        "wwwision/relay-pagination": "^1.0"
+    },
+    "require-dev": {
+        "roave/security-advisories": "dev-latest"
+    },
+    "autoload": {
+        "psr-4": {
+            "Wwwision\\NodeEventLog\\": "Classes/"
+        }
+    },
+    "extra": {
+        "neos": {
+            "package-key": "Wwwision.NodeEventLog"
+        }
+    }
+}
