@@ -11,6 +11,7 @@ use Neos\ContentRepository\DimensionSpace\DimensionSpace\DimensionSpacePointSet;
 use Neos\ContentRepository\Domain\ContentStream\ContentStreamIdentifier;
 use Neos\ContentRepository\Domain\NodeAggregate\NodeAggregateIdentifier;
 use Neos\EventSourcedContentRepository\Domain\ValueObject\UserIdentifier;
+use Neos\EventSourcedContentRepository\Domain\ValueObject\WorkspaceName;
 use Neos\EventSourcing\EventStore\RawEvent;
 use Neos\Flow\Annotations as Flow;
 use Wwwision\NodeEventLog\EventLogFilter;
@@ -24,6 +25,7 @@ final class EventLogRepository
 
     private const TABLE_NAME_HIERARCHY = 'wwwision_nodeeventlog_projection_hierarchy';
     private const TABLE_NAME_EVENT = 'wwwision_nodeeventlog_projection_event';
+    private const TABLE_NAME_WORKSPACE = 'wwwision_nodeeventlog_projection_workspace';
 
     public function __construct(Connection $dbal)
     {
@@ -144,6 +146,15 @@ final class EventLogRepository
         }
     }
 
+    public function insertWorkspace(WorkspaceName $workspaceName, ContentStreamIdentifier $contentStreamIdentifier): void
+    {
+        try {
+            $this->dbal->insert(self::TABLE_NAME_WORKSPACE, compact('workspaceName', 'contentStreamIdentifier'));
+        } catch (DBALException $e) {
+            throw new \RuntimeException(sprintf('Failed to insert workspace: %s', $e->getMessage()), 1623072264, $e);
+        }
+    }
+
     public function findNodeByIdAndDimensionSpacePointHash(NodeAggregateIdentifier $nodeAggregateIdentifier, string $dimensionSpacePointHash): ?Node
     {
         # NOTE: "LIMIT 1" in the following query is just a performance optimization since Connection::fetchAssoc() only returns the first result anyways
@@ -219,6 +230,8 @@ final class EventLogRepository
         }
         if (isset($filterData['contentStreamId'])) {
             $queryBuilder = $queryBuilder->andWhere('contentStreamIdentifier = :contentStreamId')->setParameter('contentStreamId', $filterData['contentStreamId']);
+        } elseif (isset($filterData['workspaceName'])) {
+            $queryBuilder = $queryBuilder->andWhere($queryBuilder->expr()->eq('contentStreamIdentifier', '(SELECT contentStreamIdentifier FROM ' . self::TABLE_NAME_WORKSPACE . ' WHERE workspaceName = :workspaceName)'))->setParameter('workspaceName', $filterData['workspaceName']);
         }
         if (isset($filterData['dimensionSpacePointHash'])) {
             $queryBuilder = $queryBuilder->andWhere('dimensionSpacePointHash = :dimensionSpacePointHash')->setParameter('dimensionSpacePointHash', $filterData['dimensionSpacePointHash']);

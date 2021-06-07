@@ -6,6 +6,7 @@ use Neos\ContentRepository\DimensionSpace\DimensionSpace\DimensionSpacePoint;
 use Neos\ContentRepository\Domain\ContentStream\ContentStreamIdentifier;
 use Neos\ContentRepository\Domain\NodeAggregate\NodeAggregateIdentifier;
 use Neos\EventSourcedContentRepository\Domain\ValueObject\UserIdentifier;
+use Neos\EventSourcedContentRepository\Domain\ValueObject\WorkspaceName;
 use Neos\Flow\Cli\CommandController;
 use Wwwision\NodeEventLog\EventLog;
 use Wwwision\NodeEventLog\EventLogFilter;
@@ -25,6 +26,7 @@ final class NodeEventLogCommandController extends CommandController
      *
      * @param string|null $node id of the node to fetch activities for (NodeAggregateIdentifier)
      * @param string|null $contentStream id of the content stream to filter for (ContentStreamIdentifier)
+     * @param string|null $workspace name of the workspace to filter for (WorkspaceName)
      * @param string|null $user id of the initiating user to filter for (UserIdentifier)
      * @param string|null $dimension JSON string representing the dimensions space point to filter for (DimensionSpacePoint)
      * @param bool $recursively If set activities for all child nodes will be fetched as well (recursively) – this is only evaluated if "--node" is specified, too
@@ -35,7 +37,7 @@ final class NodeEventLogCommandController extends CommandController
      * @param int|null $last How many events to display at once (default: 10)
      * @param string|null $before Only fetch events before the specified cursor (only applicable in conjunction with --first)
      */
-    public function showCommand(string $node = null, string $contentStream = null, string $user = null, string $dimension = null, bool $recursively = false, bool $skipInheritedEvents = false, bool $reverse = false, int $first = null, string $after = null, int $last = null, string $before = null): void
+    public function showCommand(string $node = null, string $contentStream = null, string $workspace = null, string $user = null, string $dimension = null, bool $recursively = false, bool $skipInheritedEvents = false, bool $reverse = false, int $first = null, string $after = null, int $last = null, string $before = null): void
     {
         $filter = EventLogFilter::create();
         if ($node !== null) {
@@ -43,6 +45,9 @@ final class NodeEventLogCommandController extends CommandController
         }
         if ($contentStream !== null) {
             $filter = $filter->inContentStream(ContentStreamIdentifier::fromString($contentStream));
+        }
+        if ($workspace !== null) {
+            $filter = $filter->inWorkspace(new WorkspaceName($workspace));
         }
         if ($user !== null) {
             $filter = $filter->forInitiatingUser(UserIdentifier::fromString($user));

@@ -25,7 +25,7 @@ To initialize the projector with already published events, the `projection:repla
 
 The event log can be filtered by numerous attributes including:
 * The affected **node** (recursively or not)
-* The **content stream**
+* The **content stream** (or **workspace name**)
 * The **initiating user**
 * The **dimension space point**
 
@@ -129,6 +129,7 @@ OPTIONS:
                        (NodeAggregateIdentifier)
   --content-stream     id of the content stream to filter for
                        (ContentStreamIdentifier)
+  --workspace          name of the workspace to filter for (WorkspaceName)
   --user               id of the initiating user to filter for (UserIdentifier)
   --dimension          JSON string representing the dimensions space point to
                        filter for (DimensionSpacePoint)

@@ -7,7 +7,9 @@ use Neos\ContentRepository\DimensionSpace\DimensionSpace\DimensionSpacePoint;
 use Neos\ContentRepository\Domain\ContentStream\ContentStreamIdentifier;
 use Neos\ContentRepository\Domain\NodeAggregate\NodeAggregateIdentifier;
 use Neos\EventSourcedContentRepository\Domain\ValueObject\UserIdentifier;
+use Neos\EventSourcedContentRepository\Domain\ValueObject\WorkspaceName;
 use Neos\Flow\Annotations as Flow;
+use Webmozart\Assert\Assert;
 
 /**
  * This DTO allows to specify filter criteria to limit the event log to the matching set.
@@ -19,6 +21,7 @@ final class EventLogFilter
 
     private bool $recursively = false;
     private ?NodeAggregateIdentifier $nodeId = null;
+    private ?WorkspaceName $workspaceName = null;
     private ?ContentStreamIdentifier $contentStreamId = null;
     private ?UserIdentifier $initiatingUserId = null;
     private ?string $dimensionSpacePointHash = null;
@@ -41,8 +44,17 @@ final class EventLogFilter
         return $newInstance;
     }
 
+    public function inWorkspace(WorkspaceName $workspaceName): self
+    {
+        Assert::null($this->contentStreamId, 'content stream and workspace filter must not be combined');
+        $newInstance = clone $this;
+        $newInstance->workspaceName = $workspaceName;
+        return $newInstance;
+    }
+
     public function inContentStream(ContentStreamIdentifier $contentStreamId): self
     {
+        Assert::null($this->workspaceName, 'content stream and workspace filter must not be combined');
         $newInstance = clone $this;
         $newInstance->contentStreamId = $contentStreamId;
         return $newInstance;
