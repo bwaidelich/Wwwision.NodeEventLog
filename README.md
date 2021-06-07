@@ -109,6 +109,45 @@ echo implode(',', $result->first(10)->toNodeArray());
 1,2,3,4,5,6,7,8,9,10
 ```
 
+## CLI
+
+This package comes with a `nodeeventlog:show` command that allows for filtering & rendering the event log in the CLI:
+
+```
+./flow help nodeeventlog:show
+
+Output activities with the specified filters applied
+
+COMMAND:
+  wwwision.nodeeventlog:nodeeventlog:show
+
+USAGE:
+  ./flow nodeeventlog:show [<options>]
+
+OPTIONS:
+  --node               id of the node to fetch activities for
+                       (NodeAggregateIdentifier)
+  --content-stream     id of the content stream to filter for
+                       (ContentStreamIdentifier)
+  --user               id of the initiating user to filter for (UserIdentifier)
+  --dimension          JSON string representing the dimensions space point to
+                       filter for (DimensionSpacePoint)
+  --recursively        If set activities for all child nodes will be fetched as
+                       well (recursively) – this is only evaluated if
+                       "--node" is specified, too
+  --skip-inherited-events If set only explicit events are considered. Otherwise
+                       "inherited" events, e.g. for disabled/removed/moved
+                       nodes are included in the result
+  --reverse            If set the order of the event log is reversed to show
+                       the events in the order they occured
+  --first              How many events to display at once (default: 10)
+  --after              Only fetch events after the specified cursor (only
+                       applicable in conjunction with --first)
+  --last               How many events to display at once (default: 10)
+  --before             Only fetch events before the specified cursor (only
+                       applicable in conjunction with --first)
+```
+
 ## Attribution
 
 The development of this package has been kindly supported by "Swiss Army Knife Cloud Solutions B.V."

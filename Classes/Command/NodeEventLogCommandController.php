@@ -9,7 +9,6 @@ use Neos\EventSourcedContentRepository\Domain\ValueObject\UserIdentifier;
 use Neos\Flow\Cli\CommandController;
 use Wwwision\NodeEventLog\EventLog;
 use Wwwision\NodeEventLog\EventLogFilter;
-use Wwwision\NodeEventLog\Projection\NodeEvent;
 
 final class NodeEventLogCommandController extends CommandController
 {
@@ -19,13 +18,6 @@ final class NodeEventLogCommandController extends CommandController
     {
         parent::__construct();
         $this->eventLog = $eventLog;
-    }
-
-    public function testCommand(): void
-    {
-        $result = $this->eventLog->filter(EventLogFilter::create())
-            ->withNodeConverter(fn(array $event) => $event['id']);
-        echo implode(',', $result->first(10)->toNodeArray());
     }
 
     /**
