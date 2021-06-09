@@ -51,6 +51,7 @@ final class EventLogRepository
         try {
             $this->dbal->executeStatement('TRUNCATE ' . self::TABLE_NAME_HIERARCHY);
             $this->dbal->executeStatement('TRUNCATE ' . self::TABLE_NAME_EVENT);
+            $this->dbal->executeStatement('TRUNCATE ' . self::TABLE_NAME_WORKSPACE);
         } catch (DBALException $e) {
             throw new \RuntimeException(sprintf('Failed to truncate tables: %s', $e->getMessage()), 1622475311, $e);
         }
