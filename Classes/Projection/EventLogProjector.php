@@ -17,6 +17,7 @@ use Neos\EventSourcedContentRepository\Domain\Context\NodeAggregate\Event\NodeSp
 use Neos\EventSourcedContentRepository\Domain\Context\NodeAggregate\Event\RootNodeAggregateWithNodeWasCreated;
 use Neos\EventSourcedContentRepository\Domain\Context\Workspace\Event\RootWorkspaceWasCreated;
 use Neos\EventSourcedContentRepository\Domain\Context\Workspace\Event\WorkspaceWasCreated;
+use Neos\EventSourcedContentRepository\Domain\Context\Workspace\Event\WorkspaceWasRebased;
 use Neos\EventSourcedContentRepository\Domain\ValueObject\UserIdentifier;
 use Neos\EventSourcing\EventListener\AfterInvokeInterface;
 use Neos\EventSourcing\EventListener\BeforeInvokeInterface;
@@ -51,6 +52,11 @@ final class EventLogProjector implements ProjectorInterface, BeforeInvokeInterfa
     public function whenWorkspaceWasCreated(WorkspaceWasCreated $event): void
     {
         $this->repository->insertWorkspace($event->getWorkspaceName(), $event->getNewContentStreamIdentifier());
+    }
+
+    public function whenWorkspaceWasRebased(WorkspaceWasRebased $event): void
+    {
+        $this->repository->updateWorkspace($event->getWorkspaceName(), $event->getNewContentStreamIdentifier());
     }
 
     public function whenNodeAggregateNameWasChanged(NodeAggregateNameWasChanged $event, RawEvent $rawEvent): void

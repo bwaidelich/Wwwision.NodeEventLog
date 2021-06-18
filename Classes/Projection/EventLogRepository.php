@@ -156,6 +156,15 @@ final class EventLogRepository
         }
     }
 
+    public function updateWorkspace(WorkspaceName $workspaceName, ContentStreamIdentifier $contentStreamIdentifier): void
+    {
+        try {
+            $this->dbal->update(self::TABLE_NAME_WORKSPACE, compact('workspaceName', 'contentStreamIdentifier'), compact('workspaceName'));
+        } catch (DBALException $e) {
+            throw new \RuntimeException(sprintf('Failed to update workspace: %s', $e->getMessage()), 1624004243, $e);
+        }
+    }
+
     public function findNodeByIdAndDimensionSpacePointHash(NodeAggregateIdentifier $nodeAggregateIdentifier, string $dimensionSpacePointHash): ?Node
     {
         # NOTE: "LIMIT 1" in the following query is just a performance optimization since Connection::fetchAssoc() only returns the first result anyways
