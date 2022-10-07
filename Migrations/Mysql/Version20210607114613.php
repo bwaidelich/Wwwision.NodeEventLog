@@ -43,7 +43,7 @@ final class Version20210607114613 extends AbstractMigration
           `origindimensionspacepointhash` varchar(255) NOT NULL DEFAULT "",
           `parentnodeaggregateidentifier` varchar(255) DEFAULT "",
           `disabled` tinyint(4) unsigned NOT NULL DEFAULT 0,
-          UNIQUE KEY `variant` (`nodeaggregateidentifier`,`dimensionspacepointhash`),
+          UNIQUE KEY `variant` (`nodeaggregateidentifier`,`contentstreamidentifier`,`dimensionspacepointhash`),
           KEY `parentnodeaggregateidentifier` (`parentnodeaggregateidentifier`),
           KEY `nodeaggregateidentifierpath` (`nodeaggregateidentifierpath`(768)) KEY_BLOCK_SIZE=100
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;');
