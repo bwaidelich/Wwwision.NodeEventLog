@@ -42,7 +42,7 @@ final class NodeEvent
     public static function fromDatabaseRow(array $row): self
     {
         return new self(
-            $row['id'],
+            (string)$row['id'],
             NodeAggregateIdentifier::fromString($row['nodeaggregateidentifier']),
             ContentStreamIdentifier::fromString($row['contentstreamidentifier']),
             $row['dimensionspacepointhash'],
