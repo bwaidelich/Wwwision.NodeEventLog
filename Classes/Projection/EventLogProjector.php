@@ -46,12 +46,12 @@ final class EventLogProjector implements ProjectorInterface, BeforeInvokeInterfa
 
     public function whenRootWorkspaceWasCreated(RootWorkspaceWasCreated $event): void
     {
-        $this->repository->insertWorkspace($event->getWorkspaceName(), $event->getNewContentStreamIdentifier());
+        $this->repository->insertWorkspace($event->getWorkspaceName(), null, $event->getNewContentStreamIdentifier());
     }
 
     public function whenWorkspaceWasCreated(WorkspaceWasCreated $event): void
     {
-        $this->repository->insertWorkspace($event->getWorkspaceName(), $event->getNewContentStreamIdentifier());
+        $this->repository->insertWorkspace($event->getWorkspaceName(), $event->getBaseWorkspaceName(), $event->getNewContentStreamIdentifier());
     }
 
     public function whenWorkspaceWasRebased(WorkspaceWasRebased $event): void

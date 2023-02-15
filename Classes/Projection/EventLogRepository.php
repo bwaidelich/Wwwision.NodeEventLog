@@ -147,10 +147,10 @@ final class EventLogRepository
         }
     }
 
-    public function insertWorkspace(WorkspaceName $workspaceName, ContentStreamIdentifier $contentStreamIdentifier): void
+    public function insertWorkspace(WorkspaceName $workspaceName, ?WorkspaceName $baseWorkspaceName, ContentStreamIdentifier $contentStreamIdentifier): void
     {
         try {
-            $this->dbal->insert(self::TABLE_NAME_WORKSPACE, compact('workspaceName', 'contentStreamIdentifier'));
+            $this->dbal->insert(self::TABLE_NAME_WORKSPACE, compact('workspaceName', 'baseWorkspaceName', 'contentStreamIdentifier'));
         } catch (DBALException $e) {
             throw new \RuntimeException(sprintf('Failed to insert workspace: %s', $e->getMessage()), 1623072264, $e);
         }
@@ -241,7 +241,13 @@ final class EventLogRepository
         if (isset($filterData['contentStreamId'])) {
             $queryBuilder = $queryBuilder->andWhere('contentStreamIdentifier = :contentStreamId')->setParameter('contentStreamId', $filterData['contentStreamId']);
         } elseif (isset($filterData['workspaceName'])) {
-            $queryBuilder = $queryBuilder->andWhere($queryBuilder->expr()->eq('contentStreamIdentifier', '(SELECT contentStreamIdentifier FROM ' . self::TABLE_NAME_WORKSPACE . ' WHERE workspaceName = :workspaceName)'))->setParameter('workspaceName', $filterData['workspaceName']);
+            if ($filterData['includeBaseWorkspaces'] === true) {
+                $queryBuilder = $queryBuilder->andWhere($queryBuilder->expr()->in('contentStreamIdentifier',
+                    'WITH RECURSIVE cte AS (SELECT workSpaceName, baseWorkSpaceName, contentStreamIdentifier FROM ' . self::TABLE_NAME_WORKSPACE . ' WHERE workSpaceName = :workspaceName UNION ALL SELECT w.workSpaceName, w.baseWorkSpaceName, w.contentStreamIdentifier FROM ' . self::TABLE_NAME_WORKSPACE . ' w JOIN cte ON w.workSpaceName = cte.baseWorkSpaceName) SELECT contentStreamIdentifier FROM cte'))->setParameter('workspaceName', $filterData['workspaceName']);
+            } else {
+                $queryBuilder = $queryBuilder->andWhere($queryBuilder->expr()->eq('contentStreamIdentifier',
+                    '(SELECT contentStreamIdentifier FROM ' . self::TABLE_NAME_WORKSPACE . ' WHERE workspaceName = :workspaceName)'))->setParameter('workspaceName', $filterData['workspaceName']);
+            }
         }
         if (isset($filterData['dimensionSpacePointHash'])) {
             $queryBuilder = $queryBuilder->andWhere('dimensionSpacePointHash = :dimensionSpacePointHash')->setParameter('dimensionSpacePointHash', $filterData['dimensionSpacePointHash']);
