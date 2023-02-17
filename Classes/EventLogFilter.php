@@ -21,6 +21,7 @@ final class EventLogFilter
 
     private bool $recursively = false;
     private bool $includeBaseWorkspaces = false;
+    private bool $includeDerivedWorkspaces = false;
     private ?NodeAggregateIdentifier $nodeId = null;
     private ?WorkspaceName $workspaceName = null;
     private ?ContentStreamIdentifier $contentStreamId = null;
@@ -45,12 +46,16 @@ final class EventLogFilter
         return $newInstance;
     }
 
-    public function inWorkspace(WorkspaceName $workspaceName, bool $includeBaseWorkspaces = false): self
+    public function inWorkspace(WorkspaceName $workspaceName, bool $includeBaseWorkspaces = false, bool $includeDerivedWorkspaces = false): self
     {
         Assert::null($this->contentStreamId, 'content stream and workspace filter must not be combined');
+        if ($includeDerivedWorkspaces) {
+            Assert::false($includeBaseWorkspaces, 'includeBaseWorkspaces and includeDerivedWorkspaces must not be combined');
+        }
         $newInstance = clone $this;
         $newInstance->workspaceName = $workspaceName;
         $newInstance->includeBaseWorkspaces = $includeBaseWorkspaces;
+        $newInstance->includeDerivedWorkspaces = $includeDerivedWorkspaces;
         return $newInstance;
     }
 

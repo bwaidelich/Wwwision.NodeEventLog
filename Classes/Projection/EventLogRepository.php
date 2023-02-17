@@ -243,7 +243,12 @@ final class EventLogRepository
         } elseif (isset($filterData['workspaceName'])) {
             if ($filterData['includeBaseWorkspaces'] === true) {
                 $queryBuilder = $queryBuilder->andWhere($queryBuilder->expr()->in('contentStreamIdentifier',
-                    'WITH RECURSIVE cte AS (SELECT workSpaceName, baseWorkSpaceName, contentStreamIdentifier FROM ' . self::TABLE_NAME_WORKSPACE . ' WHERE workSpaceName = :workspaceName UNION ALL SELECT w.workSpaceName, w.baseWorkSpaceName, w.contentStreamIdentifier FROM ' . self::TABLE_NAME_WORKSPACE . ' w JOIN cte ON w.workSpaceName = cte.baseWorkSpaceName) SELECT contentStreamIdentifier FROM cte'))->setParameter('workspaceName', $filterData['workspaceName']);
+                    'WITH RECURSIVE cte AS (SELECT workSpaceName, baseWorkSpaceName, contentStreamIdentifier FROM ' . self::TABLE_NAME_WORKSPACE . ' WHERE workSpaceName = :workspaceName UNION ALL SELECT w.workSpaceName, w.baseWorkSpaceName, w.contentStreamIdentifier FROM ' . self::TABLE_NAME_WORKSPACE . ' w JOIN cte ON w.workSpaceName = cte.baseWorkSpaceName) SELECT contentStreamIdentifier FROM cte'))->setParameter('workspaceName',
+                    $filterData['workspaceName']);
+            } elseif ($filterData['includeDerivedWorkspaces'] === true) {
+                $queryBuilder = $queryBuilder->andWhere($queryBuilder->expr()->in('contentStreamIdentifier',
+                    'WITH RECURSIVE cte AS (SELECT workSpaceName, baseWorkSpaceName, contentStreamIdentifier FROM ' . self::TABLE_NAME_WORKSPACE . ' WHERE workSpaceName = :workspaceName UNION ALL SELECT w.workSpaceName, w.baseWorkSpaceName, w.contentStreamIdentifier FROM ' . self::TABLE_NAME_WORKSPACE . ' w JOIN cte ON w.baseWorkSpaceName = cte.workSpaceName) SELECT contentStreamIdentifier FROM cte'))->setParameter('workspaceName',
+                    $filterData['workspaceName']);
             } else {
                 $queryBuilder = $queryBuilder->andWhere($queryBuilder->expr()->eq('contentStreamIdentifier',
                     '(SELECT contentStreamIdentifier FROM ' . self::TABLE_NAME_WORKSPACE . ' WHERE workspaceName = :workspaceName)'))->setParameter('workspaceName', $filterData['workspaceName']);
